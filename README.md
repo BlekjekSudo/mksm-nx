@@ -14,7 +14,7 @@
 
 > [!IMPORTANT]
 > **No original game files are provided.** You must supply your own legally obtained, complete Xbox copy of **Mortal Kombat: Shaolin Monks**.
-> This repository does not distribute XBE/ISO files, movies, audio, WAD archives, generated game translations, or a prebuilt game NRO.
+> Public SD releases contain the port NRO, instructions and licenses. They exclude XBE/ISO files, movies, audio, WAD archives and generated C++ translation sources.
 > The setup pipeline runs locally against your files. Its SD-card output contains your private game data and must not be uploaded or redistributed.
 
 This Switch target is based on [OAleex/ShaolinMonksRecomp](https://github.com/OAleex/ShaolinMonksRecomp) and the pinned [XboxXBERecomp](https://github.com/TGP482/XboxXBERecomp) SDK. The original x86 game executable is statically translated into C++ and compiled to **native ARM64**. Switch host code supplies graphics, audio, input, storage and memory services.
@@ -43,6 +43,20 @@ The desktop upstream's campaign reports do not establish Switch compatibility. E
 - NRO metadata with author **ArdRecomp** and an optional external icon.
 - Local build receipts, checksums and an SD setup pipeline that preserves existing outputs and user saves.
 - Optional **MK Shaolin Monk** NSP forwarder tooling and a separate Ryujinx depth-format compatibility patch.
+
+## Download an SD release
+
+Download the **sd-card.zip** from [Switch releases](https://github.com/BlekjekSudo/mksm-nx/releases).
+Extract it and copy its `switch/` folder to the SD root.
+Add your complete extracted Xbox game to `switch/shaolin-recomp/game/`, including `default.xbe`.
+The release notes and `game/README.txt` record the exact XBE SHA-256 required by that NRO.
+Use hbmenu title takeover for full application memory. Preserve your existing `hdd/` saves when updating.
+If your XBE differs, use the local build pipeline below.
+
+Tags named `switch-v*` trigger the [Switch release workflow](.github/workflows/switch-release.yml).
+It tests the packaging tools and checks the prepared ZIP against the actual tagged source before publishing the prerelease.
+The NRO is compiled locally with a user-supplied XBE; hosted CI never receives original game files.
+See [release maintenance](docs/SWITCH_RELEASES.md) for the single-command tag/upload process.
 
 ## Build your local SD setup
 

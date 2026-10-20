@@ -1,0 +1,79 @@
+name: Switch release
+
+on:
+  push:
+    tags:
+      - 'switch-v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing Switch tag with a prepared draft release
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: switch-release-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python tools/check_public_tree.py
+      - run: python -m unittest discover -s tests -p switch_setup_test.py -v
+      - run: python -m unittest discover -s tests -p switch_release_test.py -v
+
+  publish:
+    needs: check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Wait for the locally prepared draft assets
+        shell: bash
+        run: |
+          python -c 'import os; from tools.package_switch_release import check_tag; check_tag(os.environ["RELEASE_TAG"])'
+          ready=false
+          for attempt in $(seq 1 36); do
+            if gh release view "$RELEASE_TAG" --json assets --jq '.assets[].name' > "$RUNNER_TEMP/asset-names.txt" 2>/dev/null; then
+              if grep -Fxq 'checksums.txt' "$RUNNER_TEMP/asset-names.txt"; then
+                ready=true
+                break
+              fi
+            fi
+            sleep 10
+          done
+          test "$ready" = true
+          mkdir "$RUNNER_TEMP/switch-release"
+          gh release download "$RELEASE_TAG" --dir "$RUNNER_TEMP/switch-release"
+      - name: Verify the public ZIP against the actual tag
+        shell: bash
+        run: python tools/package_switch_release.py --verify --tag "$RELEASE_TAG" --output "$RUNNER_TEMP/switch-release"
+      - name: Publish the verified experimental release
+        shell: bash
+        run: |
+          gh release edit "$RELEASE_TAG" --draft=false --prerelease --latest=false
+          echo "Published $RELEASE_TAG after verifying the SD ZIP, NRO, source provenance and checksums." >> "$GITHUB_STEP_SUMMARY"

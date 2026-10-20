@@ -16,7 +16,10 @@ When updating, replace only the NRO. Preserve hdd/ and your original game files.
 The original game menus control brightness and other gameplay settings.
 
 The repository supplies source and build tools, not the original game.
+Public releases supply the port NRO and these instructions without original game data.
 You must provide your own legally obtained complete Xbox game files.
+Put those files in switch/shaolin-recomp/game/ before launching.
+See game/README.txt and the release notes for the required default.xbe SHA-256.
 A locally generated SD setup contains your private game files. Do not redistribute it.
 The project license does not license the original game's code, names, or artwork.
 Code and dependency notices are in licenses/.

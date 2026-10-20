@@ -64,6 +64,11 @@ Experimental Switch package
 Switch source and local SD setup tools:
 https://github.com/BlekjekSudo/mksm-nx
 
+Switch releases use an sd-card.zip with the NRO, instructions and licenses.
+Copy its switch/ folder to the SD root. Add your complete original game files to game/.
+See the release notes for the required executable SHA-256.
+Release tags use switch-vMAJOR.MINOR.PATCH and are verified by GitHub Actions.
+
 The MK Shaolin Monk NSP forwards to:
 sdmc:/switch/shaolin-recomp/ShaolinMonksRecomp.nro
 Keep the complete original game files in that folder's game/ directory.

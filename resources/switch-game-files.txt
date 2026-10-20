@@ -1,0 +1,9 @@
+Original Xbox game files are required here.
+
+Copy your complete extracted Mortal Kombat: Shaolin Monks game into this folder,
+including default.xbe and every original archive, movie, audio file and subfolder.
+The release contains the port executable only, not the original game files.
+
+The XBE must match the executable used to build this NRO. Check the SHA-256 below.
+Build locally from your own executable if you have a different variant.
+Do not upload your game files, saves or locally populated SD setup to GitHub.
