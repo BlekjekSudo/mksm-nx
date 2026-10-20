@@ -41,6 +41,9 @@
 #include "kernel/kernel.h"
 #include "linux/vk/bc_decode.h"
 #include "linux/vk/vk_shader.h"
+#ifdef __SWITCH__
+#include "linux/vk/spirv_cache.h"
+#endif
 #include "raster_compat.h"
 #include "runtime_paths.h"
 #include "sfd_filter_compat.h"
@@ -1904,6 +1907,19 @@ VkShaderModule VulkanBackend::Compile(const std::string& src, const char* entry,
     std::vector<uint32_t> spirv;
     std::string error;
     VkShaderModule module = VK_NULL_HANDLE;
+#ifdef __SWITCH__
+    const bool cached = vkshader::cache::Load(shaolin::paths::Cache(), hash, spirv);
+    if (cached) {
+        VkShaderModuleCreateInfo ci{VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO};
+        ci.codeSize = spirv.size() * sizeof(uint32_t);
+        ci.pCode = spirv.data();
+        if (vk.vkCreateShaderModule(dev_, &ci, nullptr, &module) == VK_SUCCESS) {
+            LOGR("vulkan: SPIR-V cache hit %016llX", static_cast<unsigned long long>(hash));
+            blobs_[hash] = module;
+            return module;
+        }
+    }
+#endif
     if (!vkshader::Compile(src, entry, stage, spirv, error)) {
         LOGE("vulkan: shader compile failed: %s", error.c_str());
         LOGE("%s", src.c_str());
@@ -1912,6 +1928,9 @@ VkShaderModule VulkanBackend::Compile(const std::string& src, const char* entry,
         ci.codeSize = spirv.size() * sizeof(uint32_t);
         ci.pCode = spirv.data();
         if (vk.vkCreateShaderModule(dev_, &ci, nullptr, &module) != VK_SUCCESS) module = VK_NULL_HANDLE;
+#ifdef __SWITCH__
+        if (module) vkshader::cache::Save(shaolin::paths::Cache(), hash, spirv);
+#endif
     }
     blobs_[hash] = module;
     return module;

@@ -1,135 +1,159 @@
-# Shaolin Monks Recomp
-
 <p align="center">
-  <img src="docs/images/shaolin-monks-recomp.png" width="760" alt="Shaolin Monks Recomp logo">
+  <img src="https://cdn2.steamgriddb.com/icon_thumb/1b3ecca102b57d735ac385a9c03fd15b.png" width="128" height="128" alt="Mortal Kombat: Shaolin Monks icon">
 </p>
 
+<h1 align="center">Shaolin Monks Recomp for Nintendo Switch</h1>
+<p align="center">An experimental ARM64 recompilation port of the original Xbox game.<br>Switch port by <strong>ArdRecomp</strong> · Repository: <strong>mksm-nx</strong></p>
+
 <p align="center">
-  <a href="https://github.com/OAleex/ShaolinMonksRecomp/releases/latest"><img src="https://img.shields.io/badge/Download-Latest-2563eb?style=for-the-badge&amp;logo=github&amp;logoColor=white" alt="Download the latest release"></a>
-  <a href="https://github.com/OAleex/ShaolinMonksRecomp/releases/latest"><img src="https://img.shields.io/github/v/release/OAleex/ShaolinMonksRecomp?style=for-the-badge&amp;logo=github&amp;label=Latest%20release&amp;cacheSeconds=300" alt="Latest stable release"></a>
-  <a href="https://github.com/OAleex/ShaolinMonksRecomp/releases"><img src="https://img.shields.io/github/downloads/OAleex/ShaolinMonksRecomp/total?style=for-the-badge&amp;logo=github&amp;label=Release%20downloads" alt="Total GitHub release downloads"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPL--2.0--or--later-blue?style=for-the-badge" alt="GPL-2.0-or-later license"></a>
+  <a href="https://github.com/BlekjekSudo/mksm-nx/actions/workflows/source-checks.yml"><img src="https://github.com/BlekjekSudo/mksm-nx/actions/workflows/source-checks.yml/badge.svg" alt="Source checks"></a>
+  <img src="https://img.shields.io/badge/target-ARM64%20%2F%20libnx-blue" alt="ARM64 and libnx">
+  <img src="https://img.shields.io/badge/graphics-Vulkan%20%2F%20switch--mesa-7358db" alt="Vulkan and switch-mesa">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/source-GPL--2.0--or--later-green" alt="Source license"></a>
 </p>
 
 > [!IMPORTANT]
-> Shaolin Monks Recomp does not include the original game or its assets.
-> You must provide your own legally obtained **USA/Europe Xbox copy of Mortal Kombat: Shaolin Monks**.
+> **No original game files are provided.** You must supply your own legally obtained, complete Xbox copy of **Mortal Kombat: Shaolin Monks**.
+> This repository does not distribute XBE/ISO files, movies, audio, WAD archives, generated game translations, or a prebuilt game NRO.
+> The setup pipeline runs locally against your files. Its SD-card output contains your private game data and must not be uploaded or redistributed.
 
-**A PC port of Mortal Kombat: Shaolin Monks, made through static recompilation.**
+This Switch target is based on [OAleex/ShaolinMonksRecomp](https://github.com/OAleex/ShaolinMonksRecomp) and the pinned [XboxXBERecomp](https://github.com/TGP482/XboxXBERecomp) SDK. The original x86 game executable is statically translated into C++ and compiled to **native ARM64**. Switch host code supplies graphics, audio, input, storage and memory services.
 
-The original Xbox code runs natively on the PC.
-The port adds resolution and render scale settings, display modes, keyboard and mouse input, and remappable controller buttons.
+## Current status
 
-The maintainer reports a completed campaign playthrough. Some graphical issues remain.
-
-**Mortal Kombat II** and **The Suffering Demo** do not run.
-
-## System requirements
-
-| Component | Requirement |
+| Area | Status |
 | --- | --- |
-| CPU | x64 processor with SSE4.2 and POPCNT |
-| System | Windows 10 version 1903 or later, or Linux with glibc 2.38 or later |
-| GPU | Direct3D 12, or Vulkan 1.3. Vulkan 1.2 requires dynamic rendering. |
-| Input | Keyboard and mouse, or a compatible controller |
-| Game files | Original USA/Europe Xbox release |
+| Startup and movies | Tested through the opening sequences during development |
+| Gameplay | Goro's Lair reached in Ryujinx and reported working on a physical Switch |
+| Frame limit | 60 FPS host cap; original guest clocks and simulation constants retained |
+| Performance | Removing the earlier 30 FPS cap improved reported game speed; stable 60 FPS across the game is **not verified** |
+| Full campaign / Ko-op | Not validated for this Switch target |
+| NSP forwarder | Package structure, icon, title and path validated; installation and boot on hardware remain untested |
 
-## Getting started
+The desktop upstream's campaign reports do not establish Switch compatibility. Expect remaining visual, audio, timing or compatibility issues. Reports are most useful with the NRO build ID, scene, console clocks and logs.
 
-1. Download the [latest release package](https://github.com/OAleex/ShaolinMonksRecomp/releases/latest) for your system.
-2. Extract the package.
-3. Start the executable in the extracted folder.
-4. Select your ISO, XISO, ZIP, extracted game folder, or `default.xbe`.
-5. Select **Save and Play** in the launcher.
+## What the Switch port adds
 
-The runtime reads ISO and XISO images directly. Setup imports ZIP contents once.
-Keep the selected image or complete game folder available. You can change it in the launcher's **Files and support** tab.
+- ARM64/libnx runtime integration with a sparse 4 GiB guest address reservation and aliased Xbox physical-memory windows.
+- Native switch-mesa/NVK Vulkan rendering and VI presentation, with shader and pipeline caching.
+- Native audio output with a worker that replenishes device-owned buffers independently of game decoding.
+- Read-only disc access, aligned filesystem transfers and descriptor-based metadata queries for Horizon file-sharing behavior.
+- Thread cleanup and explicit propagation of guest-memory allocation failures.
+- PS2-style button positions and exchanged shoulder/trigger functions.
+- NRO metadata with author **ArdRecomp** and an optional external icon.
+- Local build receipts, checksums and an SD setup pipeline that preserves existing outputs and user saves.
+- Optional **MK Shaolin Monk** NSP forwarder tooling and a separate Ryujinx depth-format compatibility patch.
+
+## Build your local SD setup
+
+### Prerequisites
+
+- Python 3.11 or later and Git.
+- devkitPro with devkitA64, libnx and Switch support libraries: zlib, zstd and expat.
+- CMake 3.25 or later, Ninja and host Clang with C++20 support.
+- Your complete extracted Xbox game folder, including `default.xbe`.
+- Pillow only if you use `--fetch-icon` (`python -m pip install Pillow`).
+
+Use the devkitPro MSYS environment/tool paths for the supported Windows build workflow. The runtime is compiled with devkitA64; the recompiler uses host Clang. See [Switch build details](docs/SWITCH.md) for pinned dependencies and validation limits.
+
+```powershell
+git clone https://github.com/BlekjekSudo/mksm-nx.git
+cd mksm-nx
+python tools/setup_switch.py --game "<your complete extracted Xbox game folder>" --fetch-deps --fetch-mesa --fetch-icon --jobs 4
+```
+
+The command:
+
+1. Fetches the pinned public source dependencies without replacing existing checkouts.
+2. Prepares a checksum-verified native Mesa SDK under the ignored `.private/` directory.
+3. Downloads the requested icon into private build storage and verifies its checksum.
+4. Generates the game translation from **your** `default.xbe` and compiles the NRO.
+5. Copies your original game files into a fresh local SD layout and checks every copied asset's SHA-256.
+
+It does not download a game, install system toolchains, copy files onto a connected Switch or publish anything.
+
+The output is:
+
+```text
+out/switch-sd/<build-id>/
+├── staging.json
+└── switch/
+    └── shaolin-recomp/
+        ├── ShaolinMonksRecomp.nro
+        ├── build-receipt.json
+        ├── checksums.txt
+        ├── readme.txt
+        ├── licenses/
+        ├── game/                  # Your original game files
+        ├── hdd/                   # Saves and game settings
+        ├── cache/
+        └── logs/
+```
+
+Copy the generated **`switch/` folder** to the root of your SD card. Launch the NRO through hbmenu using **title takeover** for full application memory. Applet mode is insufficient.
+
+For later builds, use `--skip-codegen` to reuse a matching translation. Use `--output "<new folder>"` when an output for that build ID already exists. To stage an existing verified NRO without compiling again:
+
+```powershell
+python tools/setup_switch.py --game "<your complete extracted game folder>" --reuse-build --output "<new local SD setup folder>"
+python tools/stage_switch.py --verify "<local SD setup folder>"
+```
+
+Existing outputs are never overwritten. When updating your installed copy, **replace only the NRO and preserve `hdd/`**. Keep your existing `game/` files. Do not replace an installed save folder with the empty folder from a fresh setup.
+
+You can use an existing verified SDK with `--mesa-sdk "<SDK folder>"` and your own 256×256 RGB JPEG with `--icon "<icon.jpg>"`. Omit `--fetch-icon` to use the toolchain's default icon. Experimental XBE variants receive a warning; the runtime XBE must match the one used to generate the translation.
 
 ## Controls
 
-Xbox, PlayStation, and other SDL-compatible controllers support connection and disconnection during play.
-DualShock 4 works through USB or Bluetooth. The game displays Xbox button prompts.
+The game continues to show its original Xbox prompts.
 
-| Xbox input | Keyboard | Mouse | PlayStation |
-| --- | --- | --- | --- |
-| Left stick | W / A / S / D | - | Left stick |
-| Direction pad | Arrow keys | - | Direction pad |
-| A | Space | - | Cross |
-| B | Esc or Ctrl | Right button | Circle |
-| X | J | Left button | Square |
-| Y | K | Middle button | Triangle |
-| White | Q | Side button 2 | L1 |
-| Black | C | Side button 1 | R1 |
-| Left trigger | Shift | - | L2 |
-| Right trigger | E | - | R2 |
-| Start | Enter | - | Options |
-| Back | Backspace | - | Share |
-| Right stick | - | Movement | Right stick |
-| FPS and frame time | F9 | - | - |
-| Release / capture pointer | F10 | Click to capture | - |
-
-See [controller settings](docs/CONTROLLERS.md) for mappings, vibration, and connection details.
-
-## Languages
-
-| Language | Interface | Voice acting |
+| Switch | PS2 position / function | Xbox report |
 | --- | --- | --- |
-| English | Available | Available |
-| French | Available | Available |
-| German | Available | Available |
-| Spanish | Available | Available |
-| Italian | Available | Available |
-| Brazilian Portuguese | Available | Available |
+| Y | Square | X |
+| B | Cross | A |
+| X | Triangle | Y |
+| A | Circle | B |
+| ZR | R1 | Black |
+| ZL | L1 | White |
+| R | R2 | Right trigger |
+| L | L2 | Left trigger |
 
-Some languages require a [language pack](docs/LANGUAGE_PACKS.md).
+Plus, Minus, the directional pad and both sticks retain their normal functions. Brightness and gameplay settings remain in the original game's options.
 
-## Mods
+## Optional NSP forwarder
 
-The launcher reads the official mod catalog from the [Krypt](https://github.com/OAleex/ShaolinMonksRecompKrypt).
-It checks for mod updates when it opens.
-Manage installed mods in **Mods**, or use **Install from file...** for a local `.tar.xz` package.
-A failed installation preserves the previous mod.
-New mods and languages appear from the catalog. See [mod authoring](docs/MODS.md) for supported content and routine changes.
+The local forwarder is displayed as **MK Shaolin Monk**. It launches:
 
-## User files
+```text
+sdmc:/switch/shaolin-recomp/ShaolinMonksRecomp.nro
+```
 
-Open **Files and support** to view your data and saves folders.
+The NSP contains neither the NRO nor game data. Keep the NRO at that path; future NRO updates do not require rebuilding the forwarder. [Forwarder build instructions](docs/SWITCH_FORWARDER.md) describe the explicit local inputs. Packaging keys are never provided or committed.
 
-| Folder | Contents |
-| --- | --- |
-| Data | Settings, logs, cache, crash reports, mods and imported ZIP games |
-| Saves | The `hdd` folder, including save backups |
+## Validation and reporting
 
-To move a folder, close other copies of the game and launcher first.
-Choose an empty destination in **Files and support**. Save your settings. Restart the launcher to move the files.
-See [troubleshooting](docs/TROUBLESHOOTING.md#folders) for default paths and command-line options.
+Public [source checks](https://github.com/BlekjekSudo/mksm-nx/actions) use synthetic setup fixtures and inspect Git for private/generated files. They do not receive original game data or produce game binaries.
 
-Error dialogs identify the session log. Include that log when you report a problem.
+The local host checks cover memory aliases, allocation failures, filesystem I/O, file metadata and SPIR-V cache handling. Additional ABI/movie checks use a user-supplied executable locally. These tests do not replace physical-console gameplay testing.
 
-## Credits
+Include the build ID, scene, Switch model/operating mode and relevant `logs/runtime.log`, `logs/native-stderr.log` or `logs/exception.txt` when reporting an issue. Remove personal paths before sharing logs. Avoid uploading game files, saves or keys.
 
-- [TGP482 / XboxXBERecomp](https://github.com/TGP482/XboxXBERecomp): static recompiler and Xbox runtime.
-- [LLVM / Clang](https://llvm.org/): native code compilation.
-- [Ghidra](https://github.com/NationalSecurityAgency/ghidra): executable analysis and function inspection.
-- [SDL](https://github.com/libsdl-org/SDL): controller input, device detection and platform services.
-- [Vulkan-Headers](https://github.com/KhronosGroup/Vulkan-Headers) and [glslang](https://github.com/KhronosGroup/glslang): graphics headers and shader compilation.
-- [Dear ImGui](https://github.com/ocornut/imgui): host interface and performance display.
-- [toml++](https://github.com/marzer/tomlplusplus): configuration files.
-- [miniz](https://github.com/richgel999/miniz): ZIP imports and language resource decompression.
-- [XZ Embedded](https://github.com/tukaani-project/xz-embedded): mod package decompression.
-- [Lua](https://www.lua.org/): mod routine scripts.
-- [xemu](https://xemu.app/), [Cxbx-Reloaded](https://github.com/Cxbx-Reloaded/Cxbx-Reloaded), and [nxdk](https://github.com/XboxDev/nxdk): behavior and ABI references.
-- [OAleex Traduções](https://oaleextraducoes.com/posts/2023/10/Mortal-Kombat-Shaolin-Monks/mortal-kombat-shaolin-monks-xbox/): translation and dubbing. See the [contributors](docs/TRANSLATION_CREDITS.md).
+## Credits and licenses
 
-See [BUILDING.md](docs/BUILDING.md) to build from source, or [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) to report a problem.
+- **OAleex / ShaolinMonksRecomp** — upstream game port and host integration. Its source history and notices are retained.
+- **TGP482 / XboxXBERecomp** — static recompiler and Xbox runtime.
+- **devkitPro / libnx** — Switch toolchain and platform services.
+- **danfromtico / mesa-switch**, Mesa/NVK contributors and the pinned **autorunhq/switch-dev** SDK image — native Vulkan support.
+- **Khronos glslang and Vulkan-Headers**, **Dear ImGui**, **Zydis/Zycore** and **toml++** — graphics and build dependencies.
+- **Sphaira / nx-hbloader / libnx** — optional forwarder loader; its separate source and notices accompany locally built forwarders.
+- Requested icon artwork: [SteamGridDB-hosted image](https://cdn2.steamgriddb.com/icon_thumb/1b3ecca102b57d735ac385a9c03fd15b.png). It is not covered by the source-code license.
 
-## AI usage
+Project source retains **GPL-2.0-or-later**. The Vulkan build combines dependencies under **GPL version 3 or later**; the optional forwarder has its own notices. See [LICENSE](LICENSE), [UPSTREAM.md](UPSTREAM.md) and [licenses/](licenses/).
 
-The development process uses AI assistance for executable analysis, code changes, debugging, tests, build scripts, and documentation.
-The maintainer reviews these contributions. Validation includes automated tests and gameplay checks.
+Original game code, files, names, trademarks and artwork belong to their respective owners. This project is not affiliated with or endorsed by the owners of Mortal Kombat, Xbox or Nintendo Switch.
 
-## License
+## AI assistance
 
-The project code uses **GPL-2.0-or-later**. See [LICENSE](LICENSE), [tools and dependencies](UPSTREAM.md), and [dependency notices](licenses).
-The project license does not grant rights to the original game or its artwork.
-This project is not affiliated with or endorsed by the owners of Mortal Kombat or Xbox.
+Development has used AI assistance for analysis, code changes, debugging, tests, build tooling and documentation. Automated checks, developer observations and user-reported hardware results are distinct; none establishes full campaign compatibility by itself.
+
+Desktop development documentation remains in [docs/BUILDING.md](docs/BUILDING.md). For the original desktop user experience, consult the [upstream project](https://github.com/OAleex/ShaolinMonksRecomp).

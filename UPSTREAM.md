@@ -1,5 +1,25 @@
 # Tools and dependencies
 
+## Switch source lineage
+
+The Switch target is based on [OAleex/ShaolinMonksRecomp](https://github.com/OAleex/ShaolinMonksRecomp),
+imported at revision `7d8309098dfe995a7985dc125f286b5585f45b32`.
+Its existing source history, project license and dependency notices are preserved.
+The Switch integration and local SD setup tooling are maintained in this repository by ArdRecomp.
+They do not grant a license to the original Xbox executable or game assets.
+
+Switch dependencies include devkitPro/libnx and [mesa-switch](https://github.com/danfromtico/mesa-switch).
+`tools/setup_mesa_sdk.py` verifies an immutable public OCI image and Mesa archive hash before staging the SDK locally.
+It does not execute the image or modify the global devkitPro installation.
+The native Mesa revision is `0ff52079ca9e9e837ed27eb95a8d239f439a1864`.
+Support archives come from the user's installed devkitPro libraries.
+SDK output, source translations and local game setups are ignored by Git.
+
+The optional NSP builder uses the hash-pinned Sphaira loader at revision
+`72a94b905816de24817594109fb012a8f7107d8c`, based on nx-hbloader and libnx.
+Locally generated forwarder packages include that loader's source and GPL/ISC notices.
+Forwarder keys are separate user-provided local inputs and never enter packages.
+
 ## XboxXBERecomp
 
 The port uses [XboxXBERecomp](https://github.com/TGP482/XboxXBERecomp), copyright 2026 TGP482, under the MIT license.

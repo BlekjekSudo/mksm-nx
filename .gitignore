@@ -36,6 +36,17 @@ WADCRC.BIN
 *.ilk
 *.exp
 *.map
+*.nro
+*.nsp
+*.nso
+*.nca
+*.npdm
+*.nacp
+*.elf
+*.o
+*.a
+*.keys
+keys.dat
 *.zip
 *.7z
 *.rar

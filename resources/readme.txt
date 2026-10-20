@@ -58,3 +58,15 @@ Code license: GPL-2.0-or-later. See licenses/LICENSE.txt.
 Dependency licenses and notices: licenses/
 The game is not included.
 The project license does not grant rights to game assets.
+
+Experimental Switch package
+
+Switch source and local SD setup tools:
+https://github.com/BlekjekSudo/mksm-nx
+
+The MK Shaolin Monk NSP forwards to:
+sdmc:/switch/shaolin-recomp/ShaolinMonksRecomp.nro
+Keep the complete original game files in that folder's game/ directory.
+Replace only the NRO when updating the application.
+Preserve hdd/ for saves and settings.
+The forwarder does not include the NRO or original game files.

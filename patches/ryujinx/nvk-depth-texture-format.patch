@@ -1,0 +1,20 @@
+--- a/src/Ryujinx.Graphics.Gpu/Image/FormatTable.cs
++++ b/src/Ryujinx.Graphics.Gpu/Image/FormatTable.cs
+@@ -185,6 +185,8 @@
+             Z24S8RUintGUnormBUintAUint       = Z24S8             | RUint  | GUnorm | BUint  | AUint,         // 0x48a29
+             X8Z24RUnormGUintBUintAUint       = X8Z24             | RUnorm | GUint  | BUint  | AUint,         // 0x4912a
+             S8Z24RUnormGUintBUintAUint       = S8Z24             | RUnorm | GUint  | BUint  | AUint,         // 0x4912b
++            X8Z24RUnormGUintBUnormAUnorm     = X8Z24             | RUnorm | GUint  | BUnorm | AUnorm,        // 0x2512a
++            S8Z24RUnormGUintBUnormAUnorm     = S8Z24             | RUnorm | GUint  | BUnorm | AUnorm,        // 0x2512b
+             R32B24G8RFloatGUintBUnormAUnorm  = R32B24G8          | RFloat | GUint  | BUnorm | AUnorm,        // 0x25385
+             Zf32X24S8RFloatGUintBUnormAUnorm = Zf32X24S8         | RFloat | GUint  | BUnorm | AUnorm,        // 0x253b0
+             A8B8G8R8UnormSrgb                = A8B8G8R8          | RUnorm | GUnorm | BUnorm | AUnorm | Srgb, // 0xa4908
+@@ -411,6 +413,8 @@
+             { TextureFormat.Z24S8RUintGUnormBUintAUint,       new FormatInfo(Format.D24UnormS8Uint,    1,  1,  4,  2) },
+             { TextureFormat.X8Z24RUnormGUintBUintAUint,       new FormatInfo(Format.X8UintD24Unorm,    1,  1,  4,  2) },
+             { TextureFormat.S8Z24RUnormGUintBUintAUint,       new FormatInfo(Format.S8UintD24Unorm,    1,  1,  4,  2) },
++            { TextureFormat.X8Z24RUnormGUintBUnormAUnorm,     new FormatInfo(Format.X8UintD24Unorm,    1,  1,  4,  2) },
++            { TextureFormat.S8Z24RUnormGUintBUnormAUnorm,     new FormatInfo(Format.S8UintD24Unorm,    1,  1,  4,  2) },
+             { TextureFormat.R32B24G8RFloatGUintBUnormAUnorm,  new FormatInfo(Format.D32FloatS8Uint,    1,  1,  8,  2) },
+             { TextureFormat.Zf32X24S8RFloatGUintBUnormAUnorm, new FormatInfo(Format.D32FloatS8Uint,    1,  1,  8,  2) },
+             { TextureFormat.A8B8G8R8UnormSrgb,                new FormatInfo(Format.R8G8B8A8Srgb,      1,  1,  4,  4) },

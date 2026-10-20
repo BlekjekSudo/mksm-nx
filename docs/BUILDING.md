@@ -1,5 +1,7 @@
 # Building
 
+These instructions cover the desktop targets. For the ARM64/libnx port and local SD setup pipeline, see [SWITCH.md](SWITCH.md).
+
 The build script compiles the game, runs the requested tests and creates a release package.
 The build uses the same SDK revision, game profile and generated code for each target.
 
