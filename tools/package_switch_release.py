@@ -97,7 +97,8 @@ def public_files(root: Path, metadata: dict, nro: bytes) -> dict[str, bytes]:
     return files
 
 
-def make_package(root: Path, nro_path: Path, receipt_path: Path, tag: str, output: Path) -> Path:
+def make_package(root: Path, nro_path: Path, receipt_path: Path, tag: str, output: Path,
+                 forwarder: Path | None = None) -> Path:
     check_tag(tag)
     require(not output.exists(), 'Choose a fresh release output directory')
     receipt = json.loads(receipt_path.read_text())
@@ -137,6 +138,9 @@ def make_package(root: Path, nro_path: Path, receipt_path: Path, tag: str, outpu
     checksum_files = (archive, output / 'release-manifest.json')
     (output / 'checksums.txt').write_bytes(''.join(
         sha256(path.read_bytes()) + '  ' + path.name + '\n' for path in checksum_files).encode())
+    if forwarder:
+        from package_forwarder_release import prepare_forwarder
+        prepare_forwarder(forwarder, output)
     verify_package(root, output, tag)
     return archive
 
@@ -156,7 +160,13 @@ def verify_package(root: Path, output: Path, tag: str) -> dict:
         require(sha256(blob(root, name)) == expected, 'Tagged source mismatch: ' + name)
     expected_name = f'mksm-nx-{tag}-sd-card.zip'
     require(manifest['archive']['name'] == expected_name, 'Unexpected archive name')
-    require({p.name for p in output.iterdir()} == {expected_name, 'release-manifest.json', 'checksums.txt'},
+    from package_forwarder_release import ASSETS, verify_forwarder
+    found = {p.name for p in output.iterdir()}
+    expected_assets = {expected_name, 'release-manifest.json', 'checksums.txt'}
+    if found & ASSETS:
+        expected_assets |= ASSETS
+        verify_forwarder(output)
+    require(found == expected_assets,
             'Unexpected release assets; do not include private staging output')
     archive = output / expected_name
     require(archive.stat().st_size == manifest['archive']['bytes']
@@ -189,6 +199,7 @@ def main() -> None:
     parser.add_argument('--tag', required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--verify', action='store_true')
+    parser.add_argument('--forwarder', type=Path, help='Validated local forwarder build directory')
     parser.add_argument('--nro', type=Path, default=ROOT / 'build/switch/arm64/ShaolinMonksRecomp.nro')
     parser.add_argument('--receipt', type=Path, default=ROOT / 'build/switch/build-receipt.json')
     args = parser.parse_args()
@@ -196,7 +207,8 @@ def main() -> None:
         result = verify_package(ROOT, args.output.resolve(), args.tag)
         print(f"Verified public SD package {result['tag']} ({result['build_id']}); no original game files.")
     else:
-        print(make_package(ROOT, args.nro.resolve(), args.receipt.resolve(), args.tag, args.output.resolve()))
+        print(make_package(ROOT, args.nro.resolve(), args.receipt.resolve(), args.tag, args.output.resolve(),
+                           args.forwarder))
 
 
 if __name__ == '__main__':

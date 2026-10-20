@@ -4,6 +4,7 @@ Public release ZIPs contain the port NRO, player instructions, license notices a
 They do not contain original game files, generated translation sources, keys, logs or saves.
 The archive has the `switch/shaolin-recomp/` path ready to copy to an SD root.
 Users supply the complete extracted game in its `game/` directory.
+Each release also includes the separate NSP forwarder, loader source/license ZIP, public forwarder manifest and checksums.
 
 ## Prepare the NRO locally
 
@@ -11,6 +12,8 @@ Build with `tools/build_switch.py` or `tools/setup_switch.py` using your origina
 Keep the resulting `build/switch/build-receipt.json` next to the build products.
 Commit maintained source changes before releasing.
 The package script rejects a build if its runtime source inputs differ from the receipt or committed source.
+Build and validate the forwarder using `tools/package_switch_forwarder.py` first.
+Keep its complete output in `out/nsp/MK-Shaolin-Monk-forwarder`, or supply `--forwarder` with that directory to the publisher.
 
 ## Create the tag and draft
 
@@ -23,7 +26,7 @@ python tools/publish_switch_release.py --tag switch-v0.1.0-alpha.1 --output dist
 
 Choose a new version for each subsequent release.
 The command packages only an explicit list of approved public files, verifies the ZIP, pushes `main`,
-creates and pushes the annotated tag, then uploads the ZIP and manifest to a draft release.
+creates and pushes the annotated tag, then uploads the SD ZIP, NSP, loader source/license ZIP and manifests to a draft release.
 It uploads `checksums.txt` last as the completion marker.
 The script never uses the asset-populated output from `stage_switch.py`.
 
@@ -51,7 +54,9 @@ python tools/package_switch_release.py --tag switch-v0.1.0-alpha.1 --output dist
 python tools/package_switch_release.py --verify --tag switch-v0.1.0-alpha.1 --output dist/inspection
 ```
 
-Each output contains exactly the SD ZIP, `release-manifest.json` and `checksums.txt`.
+The low-level NRO package command produces the SD ZIP, `release-manifest.json` and `checksums.txt`.
+Add `--forwarder "<validated forwarder directory>"` to include the four forwarder assets.
+The release publisher requires them, and the GitHub workflow verifies them before publication.
 The manifest records the required original XBE hash without including the executable.
 GitHub supplies source archives for the release tag separately.
 Binary validation and a successful workflow do not establish new hardware or campaign testing.

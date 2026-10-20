@@ -20,6 +20,8 @@ def main() -> None:
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--repo', default='BlekjekSudo/mksm-nx')
     parser.add_argument('--resume', action='store_true', help='Resume uploading an existing matching draft')
+    parser.add_argument('--forwarder', type=Path, default=ROOT / 'out/nsp/MK-Shaolin-Monk-forwarder',
+                        help='Validated local forwarder build included with every release')
     args = parser.parse_args()
     check_tag(args.tag)
     require(not git(ROOT, 'status', '--porcelain').strip(), 'Commit maintained source changes before releasing')
@@ -37,7 +39,7 @@ def main() -> None:
     else:
         require(not git(ROOT, 'tag', '--list', args.tag).strip(), 'Tag exists; use --resume for a matching draft')
         make_package(ROOT, ROOT / 'build/switch/arm64/ShaolinMonksRecomp.nro',
-                     ROOT / 'build/switch/build-receipt.json', args.tag, output)
+                     ROOT / 'build/switch/build-receipt.json', args.tag, output, args.forwarder)
         run('git', 'push', 'origin', 'HEAD:refs/heads/main')
         run('git', 'tag', '-a', args.tag, '-m', 'Experimental Switch SD release ' + args.tag)
         run('git', 'push', 'origin', 'refs/tags/' + args.tag)
@@ -49,7 +51,9 @@ def main() -> None:
                  '`' + manifest['xbe_sha256'] + '`\n\n'
                  'For a different executable variant, build locally from your own XBE. '
                  'Use hbmenu title takeover for full application memory. Preserve existing `hdd/` saves '
-                 'when updating. The NSP forwarder is optional and is not included in this asset.\n\n'
+                 'when updating. The optional **MK-Shaolin-Monk-forwarder.nsp** is a separate release asset. '
+                 'It opens `sdmc:/switch/shaolin-recomp/ShaolinMonksRecomp.nro`. The matching loader source '
+                 'and licenses are in **MK-Shaolin-Monk-forwarder-source.zip**.\n\n'
                  'NRO author: **ArdRecomp**. Build ID: `' + manifest['build_id'] + '`. '
                  'The 60 FPS host cap is enabled. Full campaign compatibility and sustained 60 FPS '
                  'on hardware are not established.\n\n'
@@ -62,9 +66,14 @@ def main() -> None:
                 '--prerelease=false', '--title', 'Shaolin Monks Recomp for Switch ' + args.tag,
                 '--notes-file', note_path)
     manifest = json.loads((output / 'release-manifest.json').read_bytes())
+    from package_forwarder_release import ASSETS, CHECKSUMS
+    require(all((output / name).is_file() for name in ASSETS), 'Release is missing the forwarder assets')
     # Upload the readiness checksum last so CI cannot publish a partial upload.
     run('gh', 'release', 'upload', args.tag, '--repo', args.repo, '--clobber',
         output / manifest['archive']['name'], output / 'release-manifest.json')
+    run('gh', 'release', 'upload', args.tag, '--repo', args.repo, '--clobber',
+        *[output / name for name in sorted(ASSETS - {CHECKSUMS})])
+    run('gh', 'release', 'upload', args.tag, '--repo', args.repo, '--clobber', output / CHECKSUMS)
     run('gh', 'release', 'upload', args.tag, '--repo', args.repo, '--clobber', output / 'checksums.txt')
     print('Draft assets uploaded. The Switch release workflow will verify and publish them.')
 

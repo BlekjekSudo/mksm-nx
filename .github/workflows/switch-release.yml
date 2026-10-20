@@ -71,9 +71,11 @@ jobs:
           gh release download "$RELEASE_TAG" --dir "$RUNNER_TEMP/switch-release"
       - name: Verify the public ZIP against the actual tag
         shell: bash
-        run: python tools/package_switch_release.py --verify --tag "$RELEASE_TAG" --output "$RUNNER_TEMP/switch-release"
+        run: |
+          python tools/package_switch_release.py --verify --tag "$RELEASE_TAG" --output "$RUNNER_TEMP/switch-release"
+          python tools/package_forwarder_release.py --verify --output "$RUNNER_TEMP/switch-release"
       - name: Publish the verified release
         shell: bash
         run: |
           gh release edit "$RELEASE_TAG" --draft=false --prerelease=false --latest
-          echo "Published $RELEASE_TAG after verifying the SD ZIP, NRO, source provenance and checksums." >> "$GITHUB_STEP_SUMMARY"
+          echo "Published $RELEASE_TAG after verifying the SD ZIP, NRO, NSP, loader sources, provenance and checksums." >> "$GITHUB_STEP_SUMMARY"

@@ -10,6 +10,37 @@ import zipfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
 import package_switch_release as release
+import package_forwarder_release as forwarder
+
+
+def fixture_forwarder(root: Path) -> Path:
+    root.mkdir()
+    for name in forwarder.SOURCE_FILES:
+        path = root / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(('synthetic ' + name + '\n').encode())
+    payloads = [b'fake-program', b'fake-control', b'fake-meta']
+    names = [release.sha256(data)[:32] + '.nca' for data in payloads]
+    strings = b''.join(name.encode() + b'\0' for name in names)
+    table = bytearray(b'PFS0' + struct.pack('<III', 3, len(strings), 0))
+    offset = name_at = 0
+    for name, data in zip(names, payloads):
+        table += struct.pack('<QQII', offset, len(data), name_at, 0)
+        offset += len(data)
+        name_at += len(name) + 1
+    nsp = bytes(table) + strings + b''.join(payloads)
+    (root / 'fixture.nsp').write_bytes(nsp)
+    record = {'nsp': 'fixture.nsp', 'nsp_sha256': release.sha256(nsp), 'nsp_bytes': len(nsp),
+              'title': 'MK Shaolin Monk', 'author': 'ArdRecomp', 'title_id': '0559208E2C6F4000',
+              'target': forwarder.TARGET, 'argv': forwarder.TARGET, 'external_nro': True,
+              'embedded_game_assets': False, 'validation': {'synthetic_fixture': True},
+              'nca_files': dict(zip(names, map(release.sha256, payloads))), 'loader_revision': 'fixture',
+              'loader_source_hashes': {name: release.sha256((root / (
+                  'source/base.json' if name == 'base.json' else name)).read_bytes())
+                  for name in ['source/main.c', 'source/trampoline.s', 'base.json']},
+              'builder_sha256': release.sha256((root / 'source/package_switch_forwarder.py').read_bytes())}
+    (root / 'build.json').write_bytes(release.json_bytes(record))
+    return root
 
 
 def fixture_nro() -> bytes:
@@ -112,6 +143,31 @@ class SwitchReleaseTest(unittest.TestCase):
         struct.pack_into('<Q', data, 0x100 + 48, 1)
         with self.assertRaisesRegex(ValueError, 'embedded RomFS'):
             release.inspect_nro(bytes(data))
+
+    def test_combined_release_contains_forwarder_source_and_licenses(self):
+        source = fixture_forwarder(self.root / 'forwarder')
+        # Local key material is not on the source ZIP's explicit file list.
+        (source / 'keys.dat').write_bytes(b'synthetic private fixture')
+        release.make_package(self.root, self.nro, self.receipt, self.tag, self.output, source)
+        release.verify_package(self.root, self.output, self.tag)
+        forwarder.verify_forwarder(self.output)
+        self.assertTrue((self.output / forwarder.NSP).is_file())
+        with zipfile.ZipFile(self.output / forwarder.SOURCE) as archive:
+            self.assertEqual(set(archive.namelist()), forwarder.SOURCE_FILES)
+            self.assertNotIn('keys.dat', archive.namelist())
+
+    def test_changed_nsp_is_rejected(self):
+        source = fixture_forwarder(self.root / 'forwarder')
+        release.make_package(self.root, self.nro, self.receipt, self.tag, self.output, source)
+        (self.output / forwarder.NSP).write_bytes(b'altered')
+        with self.assertRaisesRegex(ValueError, 'checksum mismatch'):
+            forwarder.verify_forwarder(self.output)
+
+    def test_missing_loader_license_is_rejected(self):
+        source = fixture_forwarder(self.root / 'forwarder')
+        (source / 'licenses/libnx-ISC.txt').unlink()
+        with self.assertRaises(FileNotFoundError):
+            forwarder.prepare_forwarder(source, self.output)
 
 
 if __name__ == '__main__':

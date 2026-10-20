@@ -143,6 +143,7 @@ sdmc:/switch/shaolin-recomp/ShaolinMonksRecomp.nro
 ```
 
 The NSP contains neither the NRO nor game data. Keep the NRO at that path; future NRO updates do not require rebuilding the forwarder. [Forwarder build instructions](docs/SWITCH_FORWARDER.md) describe the explicit local inputs. Packaging keys are never provided or committed.
+Each release also supplies `MK-Shaolin-Monk-forwarder.nsp` as a separate asset, with its matching loader source/license ZIP and forwarder checksums.
 
 ## Validation and reporting
 
