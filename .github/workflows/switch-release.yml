@@ -72,8 +72,8 @@ jobs:
       - name: Verify the public ZIP against the actual tag
         shell: bash
         run: python tools/package_switch_release.py --verify --tag "$RELEASE_TAG" --output "$RUNNER_TEMP/switch-release"
-      - name: Publish the verified experimental release
+      - name: Publish the verified release
         shell: bash
         run: |
-          gh release edit "$RELEASE_TAG" --draft=false --prerelease --latest=false
+          gh release edit "$RELEASE_TAG" --draft=false --prerelease=false --latest
           echo "Published $RELEASE_TAG after verifying the SD ZIP, NRO, source provenance and checksums." >> "$GITHUB_STEP_SUMMARY"

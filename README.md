@@ -54,7 +54,7 @@ Use hbmenu title takeover for full application memory. Preserve your existing `h
 If your XBE differs, use the local build pipeline below.
 
 Tags named `switch-v*` trigger the [Switch release workflow](.github/workflows/switch-release.yml).
-It tests the packaging tools and checks the prepared ZIP against the actual tagged source before publishing the prerelease.
+It tests the packaging tools and checks the prepared ZIP against the actual tagged source before publishing a regular release marked Latest.
 The NRO is compiled locally with a user-supplied XBE; hosted CI never receives original game files.
 See [release maintenance](docs/SWITCH_RELEASES.md) for the single-command tag/upload process.
 

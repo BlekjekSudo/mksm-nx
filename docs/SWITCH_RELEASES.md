@@ -31,7 +31,7 @@ The `switch-v*` tag starts **Switch release** in GitHub Actions.
 The workflow runs synthetic setup/release tests and checks the public source tree.
 It waits for the prepared draft assets and downloads them with the repository token.
 It verifies the actual tagged commit, source input hashes, ZIP allowlist, NRO metadata, executable hash and checksums.
-After these checks pass, it publishes the experimental prerelease.
+After these checks pass, it publishes a regular release and marks it as Latest.
 It does not compile or run the game on a hosted runner.
 
 To resume an interrupted draft upload using the same tag and output:

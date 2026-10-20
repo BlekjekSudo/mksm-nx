@@ -54,12 +54,12 @@ def main() -> None:
                  'The 60 FPS host cap is enabled. Full campaign compatibility and sustained 60 FPS '
                  'on hardware are not established.\n\n'
                  'GitHub Actions verifies the ZIP allowlist, NRO metadata, tagged source provenance and '
-                 'checksums before publishing this prerelease. It does not run the game.\n')
+                 'checksums before publishing this release. It does not run the game.\n')
         with tempfile.TemporaryDirectory(prefix='shaolin-release-notes-') as temp:
             note_path = Path(temp) / 'notes.md'
             note_path.write_text(notes)
             run('gh', 'release', 'create', args.tag, '--repo', args.repo, '--verify-tag', '--draft',
-                '--prerelease', '--title', 'Shaolin Monks Recomp for Switch ' + args.tag,
+                '--prerelease=false', '--title', 'Shaolin Monks Recomp for Switch ' + args.tag,
                 '--notes-file', note_path)
     manifest = json.loads((output / 'release-manifest.json').read_bytes())
     # Upload the readiness checksum last so CI cannot publish a partial upload.
