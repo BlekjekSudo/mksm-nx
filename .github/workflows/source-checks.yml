@@ -24,5 +24,7 @@ jobs:
         run: python -m unittest discover -s tests -p switch_setup_test.py -v
       - name: Test public SD release boundaries
         run: python -m unittest discover -s tests -p switch_release_test.py -v
+      - name: Test executable compatibility reports
+        run: python -m unittest discover -s tests -p switch_xbe_report_test.py -v
       - name: Check Python syntax
         run: python -m compileall -q tools tests

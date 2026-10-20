@@ -1,0 +1,154 @@
+{
+  "schema": 1,
+  "file_bytes": 5644288,
+  "sha256": "6153c7e525626daf9fef5a88f3186ca1ec5310d4dfb40598c08c3894b4db39c8",
+  "title": "Mortal Kombat: Shaolin Monks",
+  "certificate_version": 3,
+  "region_mask": 7,
+  "allowed_media_mask": 1073742335,
+  "header_sha256": "64f6c4202488a9d50dc37c0f6a82d10d9614c01c78a4f1a75b0768eb2aa1cbf5",
+  "layout": {
+    "base": 65536,
+    "header_bytes": 2792,
+    "image_bytes": 9116960,
+    "entry": 999626,
+    "kernel_thunk": 9127852,
+    "tls_address": 4882156,
+    "stack_commit": 100000,
+    "heap_reserve": 1048576,
+    "heap_commit": 4096,
+    "init_flags": 5,
+    "encoding": "retail",
+    "title_id": "4D570029"
+  },
+  "sections": [
+    {
+      "name": ".text",
+      "flags": 22,
+      "virtual_address": 69632,
+      "virtual_bytes": 3887664,
+      "raw_bytes": 3887664,
+      "sha256": "d4bf6688ef00551d74fe241f81274f840822998d0ae31fb6caf1150874817eca"
+    },
+    {
+      "name": "D3D",
+      "flags": 7,
+      "virtual_address": 3957312,
+      "virtual_bytes": 192526,
+      "raw_bytes": 155840,
+      "sha256": "15db5f6f46ad748881aa0482174f0f83d9ce656143130613f63a24e00929e07e"
+    },
+    {
+      "name": "XGRPH",
+      "flags": 7,
+      "virtual_address": 4149856,
+      "virtual_bytes": 21138,
+      "raw_bytes": 17028,
+      "sha256": "0eb62ea4859f46b259f715edee77e877abc355ae8b55090518b3273ece853ce1"
+    },
+    {
+      "name": "DSOUND",
+      "flags": 7,
+      "virtual_address": 4171008,
+      "virtual_bytes": 212391,
+      "raw_bytes": 203004,
+      "sha256": "9b10cf75b2e49fdb790fe71ae9d9fead448e2c7f69e6e828def85988b3417552"
+    },
+    {
+      "name": "D3DX",
+      "flags": 7,
+      "virtual_address": 4383424,
+      "virtual_bytes": 170150,
+      "raw_bytes": 163184,
+      "sha256": "09465e7dbb5207a5b71f2b6ebbc438f6971a16244670506022fe9950b0ca9baf"
+    },
+    {
+      "name": "PSFD00",
+      "flags": 6,
+      "virtual_address": 4553600,
+      "virtual_bytes": 21896,
+      "raw_bytes": 21896,
+      "sha256": "0b5224bf45e2186814e0a0137af4f099832347750e8474a808cb9afc9c01a9a3"
+    },
+    {
+      "name": "WMADEC",
+      "flags": 7,
+      "virtual_address": 4575520,
+      "virtual_bytes": 151425,
+      "raw_bytes": 147312,
+      "sha256": "5bd2c3092a433f1bc99388554f8318dd77ec6b14cdc055dd33e353a5e2170b49"
+    },
+    {
+      "name": "XPP",
+      "flags": 7,
+      "virtual_address": 4726976,
+      "virtual_bytes": 81772,
+      "raw_bytes": 81772,
+      "sha256": "f3f7227f13eca6fee7612c67a7716828b70638be99b9af00ff9df321a02cc325"
+    },
+    {
+      "name": ".rdata",
+      "flags": 6,
+      "virtual_address": 4808768,
+      "virtual_bytes": 287322,
+      "raw_bytes": 285640,
+      "sha256": "53cd0efb5492175f63e30bd5adde7af67a8398e559c1db9ada27d628a4cfb46f"
+    },
+    {
+      "name": ".data",
+      "flags": 7,
+      "virtual_address": 5096096,
+      "virtual_bytes": 4030920,
+      "raw_bytes": 597608,
+      "sha256": "19a6920124110d587881be80040ed49f2b23f899aea1eaccafd3825920422372"
+    },
+    {
+      "name": ".idata",
+      "flags": 7,
+      "virtual_address": 9127040,
+      "virtual_bytes": 1855,
+      "raw_bytes": 1596,
+      "sha256": "434e491c768761d636a4658cf787fc7b69748a1d4ff4b01de5db8097b112c470"
+    },
+    {
+      "name": "DOLBY",
+      "flags": 38,
+      "virtual_address": 9128896,
+      "virtual_bytes": 35123,
+      "raw_bytes": 29036,
+      "sha256": "f0a884e7a36c81d3f6e5254ea998ced15c326d5212f2dbc341c1afb3817c780d"
+    },
+    {
+      "name": "$$XTINFO",
+      "flags": 56,
+      "virtual_address": 9164032,
+      "virtual_bytes": 348,
+      "raw_bytes": 348,
+      "sha256": "59a34211b5abb1516787d3c14360e3643b0eb8fb01694fda2f392fb02f748840"
+    },
+    {
+      "name": "$$XTIMAGE",
+      "flags": 56,
+      "virtual_address": 9164384,
+      "virtual_bytes": 10240,
+      "raw_bytes": 10240,
+      "sha256": "f24604f1f51541ade93c22ed9af9dcbeea2c72a0409db806163751ae52d70c16"
+    },
+    {
+      "name": "$$XSIMAGE",
+      "flags": 56,
+      "virtual_address": 9174624,
+      "virtual_bytes": 4096,
+      "raw_bytes": 4096,
+      "sha256": "0d996116437a945316f5b6ef65d3acb5c34415638961c4bce7ad854cd36ced99"
+    },
+    {
+      "name": ".XTLID",
+      "flags": 56,
+      "virtual_address": 9178720,
+      "virtual_bytes": 3768,
+      "raw_bytes": 3768,
+      "sha256": "ab7b688a437d63028db44baa386be282566e3c40f4327c8f1a710b24ae28e783"
+    }
+  ]
+}

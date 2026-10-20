@@ -52,6 +52,9 @@ Add your complete extracted Xbox game to `switch/shaolin-recomp/game/`, includin
 The release notes and `game/README.txt` record the exact XBE SHA-256 required by that NRO.
 Use hbmenu title takeover for full application memory. Preserve your existing `hdd/` saves when updating.
 If your XBE differs, use the local build pipeline below.
+The current NRO uses development XBE SHA-256 `6153c7e525626daf9fef5a88f3186ca1ec5310d4dfb40598c08c3894b4db39c8`.
+The desktop upstream reference `48240902…` is a different executable and is currently rejected by that NRO.
+See [executable compatibility and metadata reporting](docs/XBE_COMPATIBILITY.md) before treating this as a damaged game copy.
 
 Tags named `switch-v*` trigger the [Switch release workflow](.github/workflows/switch-release.yml).
 It tests the packaging tools and checks the prepared ZIP against the actual tagged source before publishing a regular release marked Latest.
